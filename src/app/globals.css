@@ -1,26 +1,35 @@
 @import "tailwindcss";
 
-:root {
-  --background: #ffffff;
-  --foreground: #171717;
+/* Tokens de marca (burdeo + pasteles) */
+@theme {
+  --font-sans: Inter, system-ui, sans-serif;
+  --font-serif: "Playfair Display", serif;
+
+  --color-brand-primary: #7E2E3B; /* burdeo */
+  --color-brand-dark: #662330;
+  --color-brand-light: #EEC9CF;   /* pastel rosado */
+  --color-brand-blush: #F7E6E9;
+  --color-brand-sand:  #F8F4F1;
+
+  --radius-xl2: 1.25rem;
+  --shadow-soft: 0 10px 30px rgba(126,46,59,0.12);
 }
 
-@theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
+/* Utilidades que usaremos en el layout */
+.section { 
+  @apply mx-auto max-w-6xl px-4 sm:px-6 lg:px-8; 
+}
+.h1 { 
+  @apply font-serif text-4xl sm:text-5xl tracking-tight text-brand-primary; 
+}
+.h2 { 
+  @apply font-serif text-3xl sm:text-4xl tracking-tight text-brand-primary; 
+}
+.card { 
+  @apply bg-white rounded-xl2 shadow-soft; 
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
-}
+:root { color-scheme: light; }
+html, body { @apply bg-rose-50 text-slate-800 font-sans; }
 
-body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
-}
+
