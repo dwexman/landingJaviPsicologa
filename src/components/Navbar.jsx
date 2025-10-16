@@ -2,7 +2,6 @@
 import { useEffect, useMemo, useState } from "react";
 import Link from "next/link";
 import Image from "next/image";
-import logoJavi from "@/assets/logo222.png"; 
 
 const SECTIONS = ["sobre-mi", "servicios", "consulta", "testimonios", "contacto"];
 
@@ -110,7 +109,7 @@ export default function Navbar() {
             aria-label="Ir al inicio"
           >
             <Image
-              src={logoJavi}
+              src="/assets/logo222.png"
               alt="Logo Javi Psicóloga"
               priority
               className="h-8 w-auto sm:h-9"

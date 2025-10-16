@@ -1,6 +1,5 @@
 import Image from "next/image";
 import ThreeCalmNetwork from "@/components/ThreeCalmNetwork";
-import fotoJavi from "@/assets/fotojavi.jpg";
 
 export default function Hero() {
   return (
@@ -83,7 +82,7 @@ export default function Hero() {
             <div className="card overflow-hidden rounded-[1.75rem] border border-white/70 bg-white/80">
               <div className="relative w-full h-[380px] md:h-[440px] lg:h-[500px]">
                 <Image
-                  src={fotoJavi}
+                  src="/assets/fotojavi.jpg"
                   alt="Psicóloga - retrato de Javi"
                   fill
                   className="object-cover object-top"
