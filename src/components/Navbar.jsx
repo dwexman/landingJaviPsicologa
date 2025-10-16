@@ -1,6 +1,8 @@
 "use client";
 import { useEffect, useMemo, useState } from "react";
 import Link from "next/link";
+import Image from "next/image";
+import logoJavi from "@/assets/logoJavi.PNG"; 
 
 const SECTIONS = ["sobre-mi", "servicios", "consulta", "testimonios", "contacto"];
 
@@ -107,9 +109,12 @@ export default function Navbar() {
             className="inline-flex items-center gap-2 rounded-full px-2 py-1.5"
             aria-label="Ir al inicio"
           >
-            <span className="grid size-8 place-items-center rounded-full bg-brand-primary text-white font-serif text-lg">
-              Ps
-            </span>
+            <Image
+              src={logoJavi}
+              alt="Logo Javi Psicóloga"
+              priority
+              className="h-8 w-auto sm:h-9"
+            />
             <span className="hidden sm:block font-serif text-lg tracking-tight text-slate-900">
               Psicología
             </span>

@@ -19,7 +19,7 @@ const SERVICIOS = [
     },
     {
         key: "familiar", titulo: "Terapia familiar", emoji: "👨‍👩‍👧‍👦",
-        desc: "Mirada sistémica para comprender dinámicas y promover cambios saludables.",
+        desc: "Comprensión de las problemáticas y conflictos.",
         bullets: ["Roles y límites", "Crianza respetuosa", "Comunicación efectiva"],
         chip: "En consulta"
     },
@@ -28,19 +28,7 @@ const SERVICIOS = [
         desc: "Flexibilidad y cercanía desde donde estés, con la misma calidad clínica.",
         bullets: ["Formato híbrido", "Horarios adaptables", "Seguimiento"],
         chip: "Zoom/Meet"
-    },
-    {
-        key: "evaluacion", titulo: "Evaluación psicológica", emoji: "🧠",
-        desc: "Proceso breve con entrevista clínica e instrumentos cuando corresponda.",
-        bullets: ["Hipótesis diagnóstica", "Informe a solicitud", "Orientación"],
-        chip: "Breve"
-    },
-    {
-        key: "grupal", titulo: "Talleres y grupos", emoji: "🤝",
-        desc: "Aprendizaje y práctica guiada en comunidad para potenciar tu bienestar.",
-        bullets: ["Mindfulness y autocuidado", "Habilidades relacionales", "Psicoeducación"],
-        chip: "Fechas por calendario"
-    },
+    }
 ];
 
 export default function Servicios() {
@@ -49,7 +37,7 @@ export default function Servicios() {
             <div aria-hidden className="absolute inset-0">
                 <div className="absolute inset-0 z-0 bg-gradient-to-br from-brand-sand/70 via-white to-brand-blush/60" />
                 <ParticlesBackdrop
-                    className="absolute inset-0 z-10" 
+                    className="absolute inset-0 z-10"
                     color="#3A1320"
                     opacity={0.24}
                     rings={4}
@@ -58,7 +46,7 @@ export default function Servicios() {
                     ringGap={0.68}
                     baseSpeed={0.07}
                     size={0.05}
-                    centerX={0}                     
+                    centerX={0}
                 />
             </div>
 
@@ -78,13 +66,14 @@ export default function Servicios() {
                                 Servicios de terapia
                             </h2>
                             <p className="mt-4 text-center text-[#0A2F4F]/80 text-base md:text-lg">
-                                Textos provisionales. Luego reemplazaremos por la descripción real de cada servicio.
+                                Solo realizo <strong>procesos psicológicos de larga data</strong> (mediana y alta complejidad).
+                                No realizo <strong>evaluaciones psicológicas</strong> ni <strong>talleres</strong>.
                             </p>
                         </div>
                     </div>
                 </div>
 
-                <div className="grid [grid-template-columns:repeat(auto-fit,minmax(320px,1fr))] gap-10 items-stretch">
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-10 items-stretch">
                     {SERVICIOS.map((s) => (
                         <article key={s.key} className="group relative h-full">
                             <div className="relative h-full rounded-2xl p-[1px] bg-gradient-to-br from-brand-primary/30 via-brand-dark/20 to-brand-primary/30 overflow-hidden">
