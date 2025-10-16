@@ -2,7 +2,7 @@
 import { useEffect, useMemo, useState } from "react";
 import Link from "next/link";
 import Image from "next/image";
-import logoJavi from "@/assets/logoJavi.png"; 
+import logoJavi from "@/assets/logo222.png"; 
 
 const SECTIONS = ["sobre-mi", "servicios", "consulta", "testimonios", "contacto"];
 

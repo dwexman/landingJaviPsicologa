@@ -17,7 +17,7 @@ export default function Page() {
       <Contacto />
       <FloatingWhatsApp
         size={60}
-        phone="569XXXXXXXX" // reemplaza por el número real, sin "+" ni 0
+        phone="56959327012"
         message="Hola, me gustaría agendar una sesión."
         label="Escríbeme"
       />
