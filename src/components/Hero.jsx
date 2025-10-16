@@ -1,6 +1,6 @@
 import Image from "next/image";
 import ThreeCalmNetwork from "@/components/ThreeCalmNetwork";
-import fotoJavi from "@/assets/fotoJavi.jpg";
+import fotoJavi from "@/assets/fotojavi.jpg";
 
 export default function Hero() {
   return (
