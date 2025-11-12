@@ -109,11 +109,14 @@ export default function Navbar() {
             aria-label="Ir al inicio"
           >
             <Image
-              src="/assets/logo222.png"
+              src="/assets/logo222.png"     
               alt="Logo Javi Psicóloga"
+              width={36}                    
+              height={36}
               priority
-              className="h-8 w-auto sm:h-9"
+              className="h-8 w-auto sm:h-9" 
             />
+
             <span className="hidden sm:block font-serif text-lg tracking-tight text-slate-900">
               Psicología
             </span>
@@ -164,9 +167,9 @@ export default function Navbar() {
                 `}
               >
                 {id === "sobre-mi" ? "Sobre mí" :
-                 id === "servicios" ? "Servicios" :
-                 id === "consulta" ? "La consulta" :
-                 id === "testimonios" ? "Testimonios" : id}
+                  id === "servicios" ? "Servicios" :
+                    id === "consulta" ? "La consulta" :
+                      id === "testimonios" ? "Testimonios" : id}
               </a>
             ))}
             <a

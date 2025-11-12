@@ -5,13 +5,17 @@ import dynamic from "next/dynamic";
 
 const ParticlesBackdrop = dynamic(() => import("@/components/ParticlesBackdrop"), { ssr: false });
 
+const GOOGLE_SCRIPT_URL =
+  "https://script.google.com/macros/s/AKfycbyeDHdmlnPTpd3ThZ_-VbXW1lm9KySwN6C96qVP-4EV5AUCcl6XcFVO81jeP9zG-UHuiQ/exec";
+
+
 export default function Contacto() {
   const [form, setForm] = useState({
     nombre: "",
     email: "",
     telefono: "",
     mensaje: "",
-    website: "", 
+    website: "",
   });
   const [error, setError] = useState("");
   const [ok, setOk] = useState(false);
@@ -28,28 +32,61 @@ export default function Contacto() {
     setError("");
     setOk(false);
 
+    // Honeypot para bots
     if (form.website) return;
 
-    if (form.nombre.trim().length < 2) return setError("Por favor, escribe tu nombre.");
-    const emailOk = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(form.email);
-    if (!emailOk) return setError("Ingresa un correo válido.");
-    const phoneDigits = form.telefono.replace(/\D/g, "");
-    if (phoneDigits.length < 8) return setError("Ingresa un teléfono válido.");
-    if (form.mensaje.trim().length < 10) return setError("Cuéntame un poco más en tu mensaje (mín. 10 caracteres).");
-    if (form.mensaje.length > maxChars) return setError(`Tu mensaje supera los ${maxChars} caracteres.`);
+    // Validaciones
+    if (form.nombre.trim().length < 2) {
+      return setError("Por favor, escribe tu nombre.");
+    }
 
+    const emailOk = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(form.email);
+    if (!emailOk) {
+      return setError("Ingresa un correo válido.");
+    }
+
+    const phoneDigits = form.telefono.replace(/\D/g, "");
+    if (phoneDigits.length < 8) {
+      return setError("Ingresa un teléfono válido.");
+    }
+
+    if (form.mensaje.trim().length < 10) {
+      return setError("Cuéntame un poco más en tu mensaje (mín. 10 caracteres).");
+    }
+
+    if (form.mensaje.length > maxChars) {
+      return setError(`Tu mensaje supera los ${maxChars} caracteres.`);
+    }
 
     setLoading(true);
+
     try {
-      await new Promise((r) => setTimeout(r, 700));
+      // 👇 Enviamos los datos a Google Apps Script
+      await fetch(GOOGLE_SCRIPT_URL, {
+        method: "POST",
+        mode: "no-cors", // importante para evitar problemas de CORS
+        headers: {
+          "Content-Type": "text/plain;charset=utf-8",
+        },
+        body: JSON.stringify({
+          nombre: form.nombre,
+          email: form.email,
+          telefono: form.telefono,
+          mensaje: form.mensaje,
+        }),
+      });
+
+      // Si no hubo error en el fetch, asumimos que se envió bien
       setOk(true);
       setForm({ nombre: "", email: "", telefono: "", mensaje: "", website: "" });
     } catch (e) {
+      console.error(e);
       setError("Ocurrió un problema al enviar. Intenta nuevamente.");
     } finally {
       setLoading(false);
     }
   };
+
 
   return (
     <section id="contacto" className="relative py-20 md:py-28 overflow-hidden" aria-label="Contacto">
@@ -58,7 +95,7 @@ export default function Contacto() {
         <ParticlesBackdrop
           className="absolute inset-0 z-10"
           color="#3A1320"
-          opacity={0.12}  
+          opacity={0.12}
           rings={4}
           pointsPerRing={90}
           innerRadius={1.0}
