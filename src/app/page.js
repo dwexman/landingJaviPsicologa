@@ -2,7 +2,6 @@ import Navbar from "@/components/Navbar";
 import Hero from "@/components/Hero";
 import Consulta from "@/components/Consulta";
 import Servicios from "@/components/Servicios";
-import Testimonios from "@/components/Testimonios";
 import Contacto from "@/components/Contacto";
 import FloatingWhatsApp from "@/components/FloatingWhatsApp";
 
@@ -13,7 +12,6 @@ export default function Page() {
       <Hero />
       <Consulta />
       <Servicios />
-      <Testimonios />
       <Contacto />
       <FloatingWhatsApp
         size={60}

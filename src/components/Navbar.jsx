@@ -3,7 +3,7 @@ import { useEffect, useMemo, useState } from "react";
 import Link from "next/link";
 import Image from "next/image";
 
-const SECTIONS = ["sobre-mi", "servicios", "consulta", "testimonios", "contacto"];
+const SECTIONS = ["sobre-mi", "servicios", "consulta", "contacto"];
 
 function NavItem({ id, label, active, onClick }) {
   return (
@@ -73,12 +73,13 @@ export default function Navbar() {
     return () => io.disconnect();
   }, []);
 
+  // Menú visible (sin testimonios)
   const desktop = useMemo(
     () => [
       { id: "sobre-mi", label: "Sobre mí" },
       { id: "servicios", label: "Servicios" },
       { id: "consulta", label: "La consulta" },
-      { id: "testimonios", label: "Testimonios" },
+      // { id: "testimonios", label: "Testimonios" }, // oculto por ahora
     ],
     []
   );
@@ -109,12 +110,12 @@ export default function Navbar() {
             aria-label="Ir al inicio"
           >
             <Image
-              src="/assets/logo222.png"     
+              src="/assets/logo222.png"
               alt="Logo Javi Psicóloga"
-              width={36}                    
+              width={36}
               height={36}
               priority
-              className="h-8 w-auto sm:h-9" 
+              className="h-8 w-auto sm:h-9"
             />
 
             <span className="hidden sm:block font-serif text-lg tracking-tight text-slate-900">
@@ -122,9 +123,15 @@ export default function Navbar() {
             </span>
           </Link>
 
+          {/* Desktop */}
           <nav className="hidden md:flex items-center gap-1">
             {desktop.map((l) => (
-              <NavItem key={l.id} id={l.id} label={l.label} active={active === l.id} />
+              <NavItem
+                key={l.id}
+                id={l.id}
+                label={l.label}
+                active={active === l.id}
+              />
             ))}
             <a
               href="#contacto"
@@ -138,6 +145,7 @@ export default function Navbar() {
             </a>
           </nav>
 
+          {/* Botón mobile */}
           <button
             aria-label={open ? "Cerrar menú" : "Abrir menú"}
             onClick={() => setOpen((v) => !v)}
@@ -145,33 +153,52 @@ export default function Navbar() {
           >
             <span className="sr-only">Menú</span>
             <div className="relative w-5 h-5">
-              <span className={`absolute left-0 right-0 top-1 block h-0.5 bg-slate-800 transition ${open ? "translate-y-2 rotate-45" : ""}`} />
-              <span className={`absolute left-0 right-0 top-2.5 block h-0.5 bg-slate-800 transition ${open ? "opacity-0" : ""}`} />
-              <span className={`absolute left-0 right-0 top-4 block h-0.5 bg-slate-800 transition ${open ? "-translate-y-2 -rotate-45" : ""}`} />
+              <span
+                className={`absolute left-0 right-0 top-1 block h-0.5 bg-slate-800 transition ${
+                  open ? "translate-y-2 rotate-45" : ""
+                }`}
+              />
+              <span
+                className={`absolute left-0 right-0 top-2.5 block h-0.5 bg-slate-800 transition ${
+                  open ? "opacity-0" : ""
+                }`}
+              />
+              <span
+                className={`absolute left-0 right-0 top-4 block h-0.5 bg-slate-800 transition ${
+                  open ? "-translate-y-2 -rotate-45" : ""
+                }`}
+              />
             </div>
           </button>
         </div>
       </div>
 
-      <div className={`md:hidden transition-all ${open ? "pointer-events-auto opacity-100" : "pointer-events-none opacity-0"}`}>
+      {/* Mobile */}
+      <div
+        className={`md:hidden transition-all ${
+          open ? "pointer-events-auto opacity-100" : "pointer-events-none opacity-0"
+        }`}
+      >
         <div className="fixed inset-0 top-16 bg-white/70 backdrop-blur-md border-t border-white/30">
           <div className="section py-6 flex flex-col gap-2">
-            {SECTIONS.slice(0, 4).map((id) => (
+            {desktop.map(({ id, label }) => (
               <a
                 key={id}
                 href={`#${id}`}
                 onClick={closeMenu}
                 className={`
                   rounded-xl2 px-4 py-3 text-base shadow-soft border
-                  ${active === id ? "bg-brand-blush/90 text-brand-primary border-brand-light/60" : "bg-white border-white/60"}
+                  ${
+                    active === id
+                      ? "bg-brand-blush/90 text-brand-primary border-brand-light/60"
+                      : "bg-white border-white/60"
+                  }
                 `}
               >
-                {id === "sobre-mi" ? "Sobre mí" :
-                  id === "servicios" ? "Servicios" :
-                    id === "consulta" ? "La consulta" :
-                      id === "testimonios" ? "Testimonios" : id}
+                {label}
               </a>
             ))}
+
             <a
               href="#contacto"
               onClick={closeMenu}

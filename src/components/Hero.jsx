@@ -1,7 +1,59 @@
 import Image from "next/image";
 import ThreeCalmNetwork from "@/components/ThreeCalmNetwork";
 
-export default function Hero() {
+const GOOGLE_SCRIPT_URL =
+  "https://script.google.com/macros/s/AKfycbyeDHdmlnPTpd3ThZ_-VbXW1lm9KySwN6C96qVP-4EV5AUCcl6XcFVO81jeP9zG-UHuiQ/exec";
+
+async function getHeroContent() {
+  const defaults = {
+    badge: "Psicóloga clínica · Enfoque psicoanalítico",
+    title: "Ps. Javiera Sepulveda Peragallo",
+    paragraph:
+      "Acompañamientos psicológicos de mediana y alta complejidad. Experiencia en trauma, abuso, depresión, dismorfia corporal, bipolaridad, TLP y toxicomanías. Trabajo en sesiones individuales, de pareja y familiares, respetando el ritmo subjetivo, la historia vital y el contexto de cada persona.",
+    chip1: "7+ años de práctica · 12 años de estudios",
+    chip2: "Online y presencial",
+    chip3: "Espacio seguro y confidencial",
+  };
+
+  try {
+    const res = await fetch(GOOGLE_SCRIPT_URL, {
+      method: "GET",
+      cache: "no-store",
+    });
+
+    if (!res.ok) {
+      // Si algo raro pasa con el servidor, usamos defaults
+      return defaults;
+    }
+
+    const text = await res.text();
+
+    let data;
+    try {
+      data = JSON.parse(text);
+    } catch {
+      // La respuesta no era JSON (por ejemplo, HTML de error o login)
+      // → volvemos a los defaults
+      return defaults;
+    }
+
+    return {
+      badge: data.badge || defaults.badge,
+      title: data.title || defaults.title,
+      paragraph: data.paragraph || defaults.paragraph,
+      chip1: data.chip1 || defaults.chip1,
+      chip2: data.chip2 || defaults.chip2,
+      chip3: data.chip3 || defaults.chip3,
+    };
+  } catch {
+    // Error de red, etc. → defaults
+    return defaults;
+  }
+}
+
+export default async function Hero() {
+  const hero = await getHeroContent();
+
   return (
     <section
       id="sobre-mi"
@@ -33,30 +85,26 @@ export default function Hero() {
           {/* Texto */}
           <div className="max-w-xl rounded-2xl border border-white/60 bg-white/60 backdrop-blur-md shadow-soft p-6 md:p-8">
             <span className="inline-block rounded-full border border-brand-light bg-white/70 px-3 py-1 text-xs tracking-wide text-slate-700">
-              Psicóloga clínica · Enfoque psicoanalítico
+              {hero.badge}
             </span>
 
             <h1 className="h1 mt-4 leading-tight">
-              Ps. Javiera Sepulveda Peragallo
+              {hero.title}
             </h1>
 
             <p className="mt-4 text-base/7 text-slate-700">
-              Acompañamientos psicológicos de <strong>mediana y alta complejidad</strong>. Experiencia en
-              <strong> trauma</strong>, <strong>abuso</strong>, <strong>depresión</strong>, <strong>dismorfia corporal</strong>,
-              <strong> bipolaridad</strong>, <strong>TLP</strong> y <strong>toxicomanías</strong>.
-              Trabajo en <strong>sesiones individuales</strong>, <strong>de pareja</strong> y <strong>familiares</strong>, respetando el
-              ritmo subjetivo, la historia vital y el contexto de cada persona.
+              {hero.paragraph}
             </p>
 
             <ul className="mt-6 flex flex-wrap gap-3 text-sm">
               <li className="rounded-full bg-white/80 px-3 py-1 shadow-soft border border-white/70">
-                7+ años de práctica · 12 años de estudios
+                {hero.chip1}
               </li>
               <li className="rounded-full bg-white/80 px-3 py-1 shadow-soft border border-white/70">
-                Online y presencial
+                {hero.chip2}
               </li>
               <li className="rounded-full bg-white/80 px-3 py-1 shadow-soft border border-white/70">
-                Espacio seguro y confidencial
+                {hero.chip3}
               </li>
             </ul>
 
