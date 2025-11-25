@@ -4,14 +4,70 @@ import Image from "next/image";
 import dynamic from "next/dynamic";
 import { useEffect, useMemo, useState } from "react";
 
-const ParticlesBackdrop = dynamic(() => import("@/components/ParticlesBackdrop"), { ssr: false });
+const ParticlesBackdrop = dynamic(
+  () => import("@/components/ParticlesBackdrop"),
+  { ssr: false }
+);
 
+// Imágenes
 import consulta1 from "../assets/consulta/consulta1.jpeg";
 import consulta2 from "../assets/consulta/consulta2.jpeg";
 import consulta3 from "../assets/consulta/consulta3.jpeg";
 import consulta4 from "../assets/consulta/consulta4.jpeg";
 import consulta5 from "../assets/consulta/consulta5.jpeg";
 import consulta7 from "../assets/consulta/consulta7.jpeg";
+
+// === GOOGLE SHEETS CONFIG ===
+const SHEET_ID = "1YbNnkDsgNmGFBSytFJ97BtgpelbCvtvwIDVGalw8ZhU";
+const CONSULTA_SHEET_NAME = "consulta";
+
+const CONSULTA_URL = `https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/tq?tqx=out:json&sheet=${encodeURIComponent(
+  CONSULTA_SHEET_NAME
+)}`;
+
+const consultaDefaults = {
+  badge: "El espacio",
+  title: "La consulta",
+  paragraph: "Un lugar tranquilo, moderno y acogedor pensado para tu terapia.",
+};
+
+async function fetchConsultaContent() {
+  try {
+    const res = await fetch(CONSULTA_URL, {
+      method: "GET",
+      cache: "no-store",
+    });
+
+    if (!res.ok) return consultaDefaults;
+
+    const text = await res.text();
+
+    const match = text.match(/setResponse\(([\s\S]+)\);/);
+    if (!match || !match[1]) return consultaDefaults;
+
+    const json = JSON.parse(match[1]);
+    const table = json.table;
+    if (!table || !table.rows || !table.rows.length) return consultaDefaults;
+
+    const rows = table.rows.filter(
+      (r) => r.c && r.c.some((cell) => cell && cell.v != null && cell.v !== "")
+    );
+
+    const dataRow = rows[1] || rows[0];
+    const row = dataRow.c || [];
+
+    const getCell = (index) => (row[index] && row[index].v) || "";
+
+    return {
+      badge: getCell(0) || consultaDefaults.badge,
+      title: getCell(1) || consultaDefaults.title,
+      paragraph: getCell(2) || consultaDefaults.paragraph,
+    };
+  } catch (e) {
+    console.error("Error leyendo Google Sheet de consulta:", e);
+    return consultaDefaults;
+  }
+}
 
 export default function Consulta() {
   const images = useMemo(
@@ -25,6 +81,22 @@ export default function Consulta() {
   const next = () => setIdx((i) => (i + 1) % images.length);
   const prev = () => setIdx((i) => (i - 1 + images.length) % images.length);
 
+  // estado para el texto de la consulta
+  const [consultaText, setConsultaText] = useState(consultaDefaults);
+
+  useEffect(() => {
+    let cancelled = false;
+
+    (async () => {
+      const data = await fetchConsultaContent();
+      if (!cancelled) setConsultaText(data);
+    })();
+
+    return () => {
+      cancelled = true;
+    };
+  }, []);
+
   useEffect(() => {
     if (idx === -1) return;
     const onKey = (e) => {
@@ -37,7 +109,11 @@ export default function Consulta() {
   }, [idx, images.length]);
 
   return (
-    <section id="consulta" className="relative py-20 md:py-28 overflow-hidden" aria-label="La consulta">
+    <section
+      id="consulta"
+      className="relative py-20 md:py-28 overflow-hidden"
+      aria-label="La consulta"
+    >
       <div aria-hidden className="absolute inset-0">
         <div className="absolute inset-0 z-0 bg-gradient-to-br from-brand-sand/70 via-white to-brand-blush/60" />
         <ParticlesBackdrop
@@ -62,15 +138,17 @@ export default function Consulta() {
               <div className="pointer-events-none absolute -top-10 -left-14 h-36 w-36 rounded-full bg-white/40 blur-3xl" />
               <div className="pointer-events-none absolute -bottom-12 -right-16 h-44 w-44 rounded-full bg-brand-primary/10 blur-3xl" />
 
+              {/* 👇 Estos tres textos ahora vienen de Google Sheets */}
               <span className="mx-auto block w-max rounded-full border border-white/60 bg-white/60 px-3 py-1 text-xs tracking-wide text-slate-700 shadow-sm">
-                El espacio
+                {consultaText.badge}
               </span>
 
               <h2 className="mt-4 text-center text-3xl md:text-5xl font-extrabold tracking-tight text-[#0A2F4F]">
-                La consulta
+                {consultaText.title}
               </h2>
+
               <p className="mt-4 text-center text-[#0A2F4F]/80 text-base md:text-lg">
-                Un lugar tranquilo, moderno y acogedor pensado para tu terapia.
+                {consultaText.paragraph}
               </p>
             </div>
           </div>
@@ -103,8 +181,20 @@ export default function Consulta() {
                     <span className="pointer-events-none absolute inset-0 bg-gradient-to-t from-black/10 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
 
                     <span className="cta absolute bottom-3 right-3 inline-flex items-center gap-2 rounded-full bg-white/90 px-3 py-2 text-sm font-semibold text-[#0A2F4F] shadow-[0_6px_16px_rgba(10,47,79,0.18)] opacity-0 group-hover:opacity-100 group-focus-within:opacity-100">
-                      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" aria-hidden>
-                        <path d="M21 21l-4.2-4.2m1.7-5.3a7 7 0 11-14 0 7 7 0 0114 0z" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+                      <svg
+                        width="18"
+                        height="18"
+                        viewBox="0 0 24 24"
+                        fill="none"
+                        aria-hidden
+                      >
+                        <path
+                          d="M21 21l-4.2-4.2m1.7-5.3a7 7 0 11-14 0 7 7 0 0114 0z"
+                          stroke="currentColor"
+                          strokeWidth="2"
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                        />
                       </svg>
                       Ampliar
                     </span>
@@ -155,36 +245,47 @@ export default function Consulta() {
       )}
 
       <style jsx>{`
-        .card3d { transform-style: preserve-3d; perspective: 1200px; }
-        .card3d-inner { transition: transform 300ms ease, box-shadow 300ms ease; will-change: transform, box-shadow; }
+        .card3d {
+          transform-style: preserve-3d;
+          perspective: 1200px;
+        }
+        .card3d-inner {
+          transition: transform 300ms ease, box-shadow 300ms ease;
+          will-change: transform, box-shadow;
+        }
         .card3d:hover .card3d-inner,
         .card3d:focus-within .card3d-inner {
           transform: translateY(-6px) rotateX(2deg) rotateY(-2deg);
-          box-shadow: 0 22px 50px rgba(10,47,79,0.20);
+          box-shadow: 0 22px 50px rgba(10, 47, 79, 0.2);
         }
 
         .border3d {
-          background:
-            conic-gradient(from 210deg at 50% 50%,
-              rgba(255,255,255,0.85),
-              rgba(255,255,255,0.35) 20%,
-              rgba(10,47,79,0.18) 55%,
-              rgba(255,255,255,0.65) 90%,
-              rgba(255,255,255,0.85));
-          filter: drop-shadow(0 8px 18px rgba(10,47,79,0.10));
+          background: conic-gradient(
+            from 210deg at 50% 50%,
+            rgba(255, 255, 255, 0.85),
+            rgba(255, 255, 255, 0.35) 20%,
+            rgba(10, 47, 79, 0.18) 55%,
+            rgba(255, 255, 255, 0.65) 90%,
+            rgba(255, 255, 255, 0.85)
+          );
+          filter: drop-shadow(0 8px 18px rgba(10, 47, 79, 0.1));
           transition: filter 300ms ease, transform 300ms ease;
         }
         .card3d:hover .border3d,
         .card3d:focus-within .border3d {
-          filter: drop-shadow(0 16px 36px rgba(10,47,79,0.18));
-          transform: translateZ(0.001px); /* evita artefactos */
+          filter: drop-shadow(0 16px 36px rgba(10, 47, 79, 0.18));
+          transform: translateZ(0.001px);
         }
 
         .sheen {
           position: absolute;
           inset: -2px;
           border-radius: calc(1rem - 1px);
-          background: linear-gradient(120deg, rgba(255,255,255,0.7), rgba(255,255,255,0) 60%);
+          background: linear-gradient(
+            120deg,
+            rgba(255, 255, 255, 0.7),
+            rgba(255, 255, 255, 0) 60%
+          );
           transform: translateX(-120%) skewX(-15deg);
           transition: transform 700ms ease;
           pointer-events: none;
@@ -195,7 +296,6 @@ export default function Consulta() {
           transform: translateX(120%) skewX(-15deg);
         }
 
-        /* botón lupa: leve “pop” */
         .card3d:hover .cta,
         .card3d:focus-within .cta {
           transform: translateZ(1px) scale(1.02);
