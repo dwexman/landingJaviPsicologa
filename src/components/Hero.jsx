@@ -1,8 +1,10 @@
 import Image from "next/image";
 import ThreeCalmNetwork from "@/components/ThreeCalmNetwork";
 
-const GOOGLE_SCRIPT_URL =
-  "https://script.google.com/macros/s/AKfycbyeDHdmlnPTpd3ThZ_-VbXW1lm9KySwN6C96qVP-4EV5AUCcl6XcFVO81jeP9zG-UHuiQ/exec";
+const SHEET_ID = "1YbNnkDsgNmGFBSytFJ97BtgpelbCvtvwIDVGalw8ZhU";
+const SHEET_GID = "514359790";
+
+const SHEET_URL = `https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/tq?tqx=out:json&gid=${SHEET_GID}`;
 
 async function getHeroContent() {
   const defaults = {
@@ -16,37 +18,50 @@ async function getHeroContent() {
   };
 
   try {
-    const res = await fetch(GOOGLE_SCRIPT_URL, {
+    const res = await fetch(SHEET_URL, {
       method: "GET",
       cache: "no-store",
     });
 
     if (!res.ok) {
-      // Si algo raro pasa con el servidor, usamos defaults
       return defaults;
     }
 
     const text = await res.text();
 
-    let data;
-    try {
-      data = JSON.parse(text);
-    } catch {
-      // La respuesta no era JSON (por ejemplo, HTML de error o login)
-      // → volvemos a los defaults
+  
+    const match = text.match(/setResponse\(([\s\S]+)\);/);
+    if (!match || !match[1]) {
       return defaults;
     }
 
+    const json = JSON.parse(match[1]);
+    const table = json.table;
+
+    if (!table || !table.rows || !table.rows.length) {
+      return defaults;
+    }
+
+    const rows = table.rows.filter(
+      (r) => r.c && r.c.some((cell) => cell && cell.v != null && cell.v !== "")
+    );
+
+  
+    const dataRow = rows[1] || rows[0]; 
+    const row = dataRow.c || [];
+
+    const getCell = (index) => (row[index] && row[index].v) || "";
+
     return {
-      badge: data.badge || defaults.badge,
-      title: data.title || defaults.title,
-      paragraph: data.paragraph || defaults.paragraph,
-      chip1: data.chip1 || defaults.chip1,
-      chip2: data.chip2 || defaults.chip2,
-      chip3: data.chip3 || defaults.chip3,
+      badge: getCell(0) || defaults.badge,
+      title: getCell(1) || defaults.title,
+      paragraph: getCell(2) || defaults.paragraph,
+      chip1: getCell(3) || defaults.chip1,
+      chip2: getCell(4) || defaults.chip2,
+      chip3: getCell(5) || defaults.chip3,
     };
-  } catch {
-    // Error de red, etc. → defaults
+  } catch (err) {
+    console.error("Error leyendo Google Sheet del Hero:", err);
     return defaults;
   }
 }
