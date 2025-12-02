@@ -2,15 +2,16 @@
 import "./globals.css";
 
 export const metadata = {
-  metadataBase: new URL("https://psicologa.example"), // <-- cámbialo cuando tengas dominio
+  metadataBase: new URL("https://javierasepulveda.cl"),
   title: {
-    default: "Psicóloga | Terapia Individual y de Pareja",
-    template: "%s | Psicóloga en Santiago",
+    default: "Psicóloga Javiera Sepúlveda · Terapia individual y de pareja",
+    template: "%s · Psicóloga Javiera Sepúlveda",
   },
   description:
-    "Espacio seguro y empático para tu bienestar emocional. Terapia individual, de pareja y online.",
+    "Psicóloga clínica Javiera Sepúlveda Peragallo. Espacio seguro y empático para tu bienestar emocional. Terapia individual, de pareja y online.",
   keywords: [
     "psicóloga",
+    "psicóloga Javiera Sepúlveda",
     "terapia de pareja",
     "terapia individual",
     "psicoterapia",
@@ -19,15 +20,13 @@ export const metadata = {
     "Chile",
   ],
   alternates: {
-    canonical: "/",
+    canonical: "/", // con metadataBase se vuelve https://javierasepulveda.cl/
   },
-  // Favicon & Apple
   icons: {
-    icon: "/logo222.png",                 // tu favicon
+    icon: "/logo222.png",
     shortcut: "/logo222.png",
-    apple: "/apple-touch-icon.png",       // ideal 180x180 (opcional)
+    apple: "/apple-touch-icon.png",
   },
-  // SEO para Google
   robots: {
     index: true,
     follow: true,
@@ -39,62 +38,60 @@ export const metadata = {
       "max-video-preview": -1,
     },
   },
-  // Open Graph (Facebook/WhatsApp/Instagram DMs)
   openGraph: {
     type: "website",
-    url: "https://psicologa.example", // <-- ajusta
-    siteName: "Psicóloga en Santiago",
+    url: "https://javierasepulveda.cl",
+    siteName: "Psicóloga Javiera Sepúlveda",
     locale: "es_CL",
-    title: "Psicóloga | Terapia Individual y de Pareja",
+    title: "Psicóloga Javiera Sepúlveda · Terapia individual y de pareja",
     description:
-      "Espacio seguro y empático para tu bienestar emocional. Terapia individual, de pareja y online.",
+      "Psicóloga clínica Javiera Sepúlveda Peragallo. Espacio seguro y empático para tu bienestar emocional. Terapia individual, de pareja y online.",
     images: [
       {
-        url: "/og-image.jpg",      // 1200x630
+        url: "/og-image.jpg", // ideal 1200x630, en public/og-image.jpg
         width: 1200,
         height: 630,
-        alt: "Consultorio de psicología - terapia individual y de pareja",
+        alt: "Consulta de psicología de Javiera Sepúlveda",
       },
     ],
   },
-  // Twitter Cards
   twitter: {
     card: "summary_large_image",
-    title: "Psicóloga | Terapia Individual y de Pareja",
+    title: "Psicóloga Javiera Sepúlveda · Terapia individual y de pareja",
     description:
-      "Espacio seguro y empático para tu bienestar emocional. Terapia individual, de pareja y online.",
+      "Psicóloga clínica Javiera Sepúlveda Peragallo. Terapia individual, de pareja y online.",
     images: ["/og-image.jpg"],
-    creator: "@tu_usuario", // opcional
+    // pon tu usuario real o borra esta línea si no quieres
+    // creator: "@tu_usuario",
   },
-  // PWA (opcional si vas a usarlo)
   manifest: "/site.webmanifest",
-  // (Opcional) verificación de Search Console
-  // verification: { google: "TU_CODIGO_DE_VERIFICACION" },
+  // Como verificaste por DNS, esto es opcional:
+  // verification: { google: "TU_CODIGO_DE_META_TAG" },
 };
 
 export const viewport = {
-  themeColor: "#FDE8E8", 
+  themeColor: "#FDE8E8",
 };
 
 export default function RootLayout({ children }) {
-  // JSON-LD para negocio local (muy útil para SEO de servicios)
+  // JSON-LD: mejor como persona (profesional independiente)
   const jsonLd = {
     "@context": "https://schema.org",
-    "@type": "LocalBusiness",
-    name: "Psicóloga en Santiago",
-    url: "https://psicologa.example",
-    image: "https://psicologa.example/og-image.jpg",
-    telephone: "+56 9 1234 5678",
+    "@type": "Person",
+    name: "Javiera Sepúlveda Peragallo",
+    jobTitle: "Psicóloga clínica",
+    url: "https://javierasepulveda.cl",
+    image: "https://javierasepulveda.cl/og-image.jpg",
     address: {
       "@type": "PostalAddress",
       addressLocality: "Santiago",
       addressRegion: "RM",
       addressCountry: "CL",
     },
-    areaServed: "Santiago, Chile",
     description:
-      "Terapia psicológica individual y de pareja, también online. Espacio seguro y empático.",
+      "Psicóloga clínica en Santiago. Terapia psicológica individual y de pareja, también online, en un espacio seguro y empático.",
     sameAs: [
+      // Reemplaza estos links por tus redes reales o elimina el que no uses
       "https://www.instagram.com/tu_instagram",
       "https://www.facebook.com/tu_facebook",
     ],

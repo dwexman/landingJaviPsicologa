@@ -8,7 +8,10 @@ const ParticlesBackdrop = dynamic(
   { ssr: false }
 );
 
-
+// =======================
+// CONTENIDO BASE TARJETAS
+// (fallback si Google falla)
+// =======================
 const SERVICIOS = [
   {
     key: "individual",
@@ -75,6 +78,45 @@ const serv1Defaults = {
   chip: "Presencial / online",
 };
 
+// Segunda tarjeta (pestaña "Serv2")
+const SERV2_SHEET_NAME = "Serv2";
+const SERV2_URL = `https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/tq?tqx=out:json&sheet=${encodeURIComponent(
+  SERV2_SHEET_NAME
+)}`;
+
+const serv2Defaults = {
+  titulo: "Terapia de pareja",
+  desc: "Comunicación, reparación del vínculo y acuerdos sostenibles para su proyecto en común.",
+  bullets: ["Conflictos y desencuentros", "Reparto de tareas", "Decisiones compartidas"],
+  chip: "80–90 min",
+};
+
+// Tercera tarjeta (pestaña "Serv3")
+const SERV3_SHEET_NAME = "Serv3";
+const SERV3_URL = `https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/tq?tqx=out:json&sheet=${encodeURIComponent(
+  SERV3_SHEET_NAME
+)}`;
+
+const serv3Defaults = {
+  titulo: "Terapia familiar",
+  desc: "Comprensión de las problemáticas y conflictos.",
+  bullets: ["Roles y límites", "Crianza respetuosa", "Comunicación efectiva"],
+  chip: "En consulta",
+};
+
+// Cuarta tarjeta (pestaña "Serv4")
+const SERV4_SHEET_NAME = "Serv4";
+const SERV4_URL = `https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/tq?tqx=out:json&sheet=${encodeURIComponent(
+  SERV4_SHEET_NAME
+)}`;
+
+const serv4Defaults = {
+  titulo: "Terapia online",
+  desc: "Flexibilidad y cercanía desde donde estés, con la misma calidad clínica.",
+  bullets: ["Formato híbrido", "Horarios adaptables", "Seguimiento"],
+  chip: "Zoom/Meet",
+};
+
 // =======================
 // HELPERS FETCH GOOGLE SHEETS
 // =======================
@@ -135,8 +177,6 @@ async function fetchServ1Card() {
       (r) => r.c && r.c.some((cell) => cell && cell.v != null && cell.v !== "")
     );
 
-    // Fila 0 = headers (titulo, desc, bullet1, bullet2, bullet3, chip)
-    // Fila 1 = contenido real
     const dataRow = rows[1] || rows[0];
     const row = dataRow.c || [];
     const getCell = (index) => (row[index] && row[index].v) || "";
@@ -155,24 +195,153 @@ async function fetchServ1Card() {
   }
 }
 
+async function fetchServ2Card() {
+  try {
+    const res = await fetch(SERV2_URL, {
+      method: "GET",
+      cache: "no-store",
+    });
+
+    if (!res.ok) return serv2Defaults;
+
+    const text = await res.text();
+    const match = text.match(/setResponse\(([\s\S]+)\);/);
+    if (!match || !match[1]) return serv2Defaults;
+
+    const json = JSON.parse(match[1]);
+    const table = json.table;
+    if (!table || !table.rows || !table.rows.length) return serv2Defaults;
+
+    const rows = table.rows.filter(
+      (r) => r.c && r.c.some((cell) => cell && cell.v != null && cell.v !== "")
+    );
+
+    const dataRow = rows[1] || rows[0];
+    const row = dataRow.c || [];
+    const getCell = (index) => (row[index] && row[index].v) || "";
+
+    const bullets = [getCell(2), getCell(3), getCell(4)].filter(Boolean);
+
+    return {
+      titulo: getCell(0) || serv2Defaults.titulo,
+      desc: getCell(1) || serv2Defaults.desc,
+      bullets: bullets.length ? bullets : serv2Defaults.bullets,
+      chip: getCell(5) || serv2Defaults.chip,
+    };
+  } catch (e) {
+    console.error("Error leyendo Google Sheet de Serv2:", e);
+    return serv2Defaults;
+  }
+}
+
+async function fetchServ3Card() {
+  try {
+    const res = await fetch(SERV3_URL, {
+      method: "GET",
+      cache: "no-store",
+    });
+
+    if (!res.ok) return serv3Defaults;
+
+    const text = await res.text();
+    const match = text.match(/setResponse\(([\s\S]+)\);/);
+    if (!match || !match[1]) return serv3Defaults;
+
+    const json = JSON.parse(match[1]);
+    const table = json.table;
+    if (!table || !table.rows || !table.rows.length) return serv3Defaults;
+
+    const rows = table.rows.filter(
+      (r) => r.c && r.c.some((cell) => cell && cell.v != null && cell.v !== "")
+    );
+
+    const dataRow = rows[1] || rows[0];
+    const row = dataRow.c || [];
+    const getCell = (index) => (row[index] && row[index].v) || "";
+
+    const bullets = [getCell(2), getCell(3), getCell(4)].filter(Boolean);
+
+    return {
+      titulo: getCell(0) || serv3Defaults.titulo,
+      desc: getCell(1) || serv3Defaults.desc,
+      bullets: bullets.length ? bullets : serv3Defaults.bullets,
+      chip: getCell(5) || serv3Defaults.chip,
+    };
+  } catch (e) {
+    console.error("Error leyendo Google Sheet de Serv3:", e);
+    return serv3Defaults;
+  }
+}
+
+async function fetchServ4Card() {
+  try {
+    const res = await fetch(SERV4_URL, {
+      method: "GET",
+      cache: "no-store",
+    });
+
+    if (!res.ok) return serv4Defaults;
+
+    const text = await res.text();
+    const match = text.match(/setResponse\(([\s\S]+)\);/);
+    if (!match || !match[1]) return serv4Defaults;
+
+    const json = JSON.parse(match[1]);
+    const table = json.table;
+    if (!table || !table.rows || !table.rows.length) return serv4Defaults;
+
+    const rows = table.rows.filter(
+      (r) => r.c && r.c.some((cell) => cell && cell.v != null && cell.v !== "")
+    );
+
+    // Fila 0 = headers (titulo, desc, bullet1, bullet2, bullet3, chip)
+    // Fila 1 = contenido real
+    const dataRow = rows[1] || rows[0];
+    const row = dataRow.c || [];
+    const getCell = (index) => (row[index] && row[index].v) || "";
+
+    const bullets = [getCell(2), getCell(3), getCell(4)].filter(Boolean);
+
+    return {
+      titulo: getCell(0) || serv4Defaults.titulo,
+      desc: getCell(1) || serv4Defaults.desc,
+      bullets: bullets.length ? bullets : serv4Defaults.bullets,
+      chip: getCell(5) || serv4Defaults.chip,
+    };
+  } catch (e) {
+    console.error("Error leyendo Google Sheet de Serv4:", e);
+    return serv4Defaults;
+  }
+}
+
 // =======================
 // COMPONENTE
 // =======================
 export default function Servicios() {
   const [header, setHeader] = useState(serviciosHeaderDefaults);
   const [serv1, setServ1] = useState(serv1Defaults);
+  const [serv2, setServ2] = useState(serv2Defaults);
+  const [serv3, setServ3] = useState(serv3Defaults);
+  const [serv4, setServ4] = useState(serv4Defaults);
 
   useEffect(() => {
     let cancelled = false;
 
     (async () => {
-      const [headerData, serv1Data] = await Promise.all([
-        fetchServiciosHeader(),
-        fetchServ1Card(),
-      ]);
+      const [headerData, serv1Data, serv2Data, serv3Data, serv4Data] =
+        await Promise.all([
+          fetchServiciosHeader(),
+          fetchServ1Card(),
+          fetchServ2Card(),
+          fetchServ3Card(),
+          fetchServ4Card(),
+        ]);
       if (!cancelled) {
         setHeader(headerData);
         setServ1(serv1Data);
+        setServ2(serv2Data);
+        setServ3(serv3Data);
+        setServ4(serv4Data);
       }
     })();
 
@@ -231,16 +400,41 @@ export default function Servicios() {
         {/* TARJETAS */}
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-10 items-stretch">
           {SERVICIOS.map((s) => {
-            const card =
-              s.key === "individual"
-                ? {
-                    ...s,
-                    titulo: serv1.titulo,
-                    desc: serv1.desc,
-                    bullets: serv1.bullets,
-                    chip: serv1.chip,
-                  }
-                : s;
+            let card = s;
+
+            if (s.key === "individual") {
+              card = {
+                ...s,
+                titulo: serv1.titulo,
+                desc: serv1.desc,
+                bullets: serv1.bullets,
+                chip: serv1.chip,
+              };
+            } else if (s.key === "pareja") {
+              card = {
+                ...s,
+                titulo: serv2.titulo,
+                desc: serv2.desc,
+                bullets: serv2.bullets,
+                chip: serv2.chip,
+              };
+            } else if (s.key === "familiar") {
+              card = {
+                ...s,
+                titulo: serv3.titulo,
+                desc: serv3.desc,
+                bullets: serv3.bullets,
+                chip: serv3.chip,
+              };
+            } else if (s.key === "online") {
+              card = {
+                ...s,
+                titulo: serv4.titulo,
+                desc: serv4.desc,
+                bullets: serv4.bullets,
+                chip: serv4.chip,
+              };
+            }
 
             return (
               <article key={card.key} className="group relative h-full">
@@ -272,7 +466,7 @@ export default function Servicios() {
                         ))}
                       </ul>
 
-                      <div className="mt-auto flex items-center justify-between pt-4">
+                      <div className="mt-auto flex items-center justify_between pt-4">
                         <span className="rounded-full border border-white/60 bg-white/70 px-3 py-1 text-xs font-semibold text-slate-600 shadow-sm">
                           {card.chip}
                         </span>
